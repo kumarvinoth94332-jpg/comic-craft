@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="white">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎉 Comic Exported - ComicCraft AI</title>
+  <meta name="description" content="Your AI comic PDF has been generated successfully.">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22><text y=%2222%22 font-size=%2222%22>💥</text></svg>">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('comiccraft_theme') || 'white';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Studio Header -->
+  <header class="studio-header">
+    <div class="header-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">💥</div>
+        <div class="brand-text">
+          <h1>COMICCRAFT</h1>
+          <span class="brand-tag">AI COMIC STORY CREATOR</span>
+        </div>
+      </a>
+      <div class="header-badges">
+        <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" title="Switch Light / Dark Theme">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel">Dark Mode</span>
+        </button>
+        <a href="/" class="btn-secondary" style="padding: 8px 16px; font-size: 13px;">
+          ← Create Another Comic
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Export Success Main Container -->
+  <main class="success-container">
+    <div class="success-card">
+      <div class="celebration-icon">🎉</div>
+      <h1 class="success-title">YOUR COMIC IS READY!</h1>
+      <p class="success-message">
+        Your AI-powered comic has been successfully created and downloaded. <br>
+        Open your downloaded PDF to view the printable edition with full artwork, captions, and narrative panels.
+      </p>
+
+      {% if filename %}
+      <div style="margin-bottom: 28px;">
+        <span class="meta-pill" style="font-family: var(--code-font); font-size: 13px;">
+          File: <strong>{{ filename }}</strong>
+        </span>
+      </div>
+      {% endif %}
+
+      <div class="success-actions">
+        {% if filename %}
+        <a href="/download-pdf/{{ filename }}" class="btn-download-pdf" style="font-size: 17px; padding: 12px 24px;">
+          ⬇ Download Again
+        </a>
+        {% endif %}
+
+        <a href="/" class="btn-generate" style="max-width: 380px; height: 58px; font-size: 20px; text-decoration: none;">
+          <span class="btn-icon">✨</span>
+          <span class="btn-text">CREATE ANOTHER COMIC</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Studio Footer -->
+  <footer class="studio-footer" style="margin-top: 100px;">
+    <p class="footer-text">
+      ComicCraft AI &copy; 2026. Made with Google Gemini, Stable Diffusion & FastAPI.
+    </p>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'white';
+      const newTheme = current === 'dark' ? 'white' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('comiccraft_theme', newTheme);
+      updateThemeButton(newTheme);
+    }
+
+    function updateThemeButton(theme) {
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      if (icon && label) {
+        if (theme === 'dark') {
+          icon.textContent = '☀️';
+          label.textContent = 'Light Mode';
+        } else {
+          icon.textContent = '🌙';
+          label.textContent = 'Dark Mode';
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'white';
+      updateThemeButton(current);
+    });
+  </script>
+
+</body>
+</html>

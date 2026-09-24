@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="white">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COMICCRAFT – AI Comic Story Creator</title>
+  <meta name="description" content="Turn your imagination into a complete 5-panel comic with Google Gemini & AI image generation.">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22><text y=%2222%22 font-size=%2222%22>💥</text></svg>">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('comiccraft_theme') || 'white';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Studio Header -->
+  <header class="studio-header">
+    <div class="header-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">💥</div>
+        <div class="brand-text">
+          <h1>COMICCRAFT</h1>
+          <span class="brand-tag">AI COMIC STORY CREATOR</span>
+        </div>
+      </a>
+      <div class="header-badges">
+        <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" title="Switch Light / Dark Theme">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel">Dark Mode</span>
+        </button>
+        <div class="engine-badge">
+          <span class="pulse-dot"></span>
+          <span>GEMINI 3.6 ACTIVE</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-pill">
+      <span>⚡ Next-Gen Visual Storytelling</span>
+    </div>
+    <h1 class="hero-title">
+      Turn Your Imagination Into A <br>
+      <span class="gradient-text">Complete 5-Panel Comic</span>
+    </h1>
+    <p class="hero-subtitle">
+      Turn your imagination into a complete comic with AI. Enter an idea and watch characters, dialogues, stunning visual panels, and printable PDFs emerge in seconds.
+    </p>
+  </section>
+
+  <!-- Workflow Section: IDEA -> STORY -> ART -> COMIC -->
+  <section class="workflow-section">
+    <div class="workflow-bar">
+      <div class="step-item active">
+        <div class="step-num">01</div>
+        <div class="step-name">Idea</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">
+        <div class="step-num">02</div>
+        <div class="step-name">Story</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">
+        <div class="step-num">03</div>
+        <div class="step-name">Art</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">
+        <div class="step-num">04</div>
+        <div class="step-name">Comic</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Creator Form Card -->
+  <main class="creator-container">
+    <div class="creator-card">
+      
+      {% if error %}
+      <div class="alert-error" role="alert">
+        <span>⚠️</span>
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+
+      <form id="comicForm" action="/generate" method="POST" class="form-grid">
+        
+        <!-- 1. Story Prompt -->
+        <div class="input-group">
+          <label for="story_prompt" class="input-label">
+            <span>1. Story Prompt</span>
+            <span class="label-hint">Describe your story concept or plot</span>
+          </label>
+          <div class="input-wrapper">
+            <textarea 
+              id="story_prompt" 
+              name="story_prompt" 
+              class="comic-textarea" 
+              required
+              rows="4"
+              placeholder="Example: A brave fox exploring an enchanted forest"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- 2. Main Character Name -->
+        <div class="input-group">
+          <label for="character_name" class="input-label">
+            <span>2. Main Character Name</span>
+            <span class="label-hint">Hero or protagonist</span>
+          </label>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="character_name" 
+              name="character_name" 
+              class="comic-input" 
+              required
+              placeholder="Enter your hero's name"
+            />
+          </div>
+        </div>
+
+        <!-- Three-column row for Setting, Tone, Art Style -->
+        <div class="form-row">
+          
+          <!-- 3. Setting -->
+          <div class="input-group">
+            <label for="setting" class="input-label">
+              <span>3. Setting</span>
+            </label>
+            <select id="setting" name="setting" class="comic-select" onchange="toggleCustomSetting(this.value)">
+              <option value="Forest" selected>🌲 Forest</option>
+              <option value="School">🏫 School</option>
+              <option value="City">🌆 City</option>
+              <option value="Space">🚀 Space</option>
+              <option value="Custom">✨ Custom Setting...</option>
+            </select>
+            <!-- Custom Setting Input Field -->
+            <div id="customSettingContainer" class="custom-setting-box" style="display: none;">
+              <input 
+                type="text" 
+                id="custom_setting" 
+                name="custom_setting" 
+                class="comic-input" 
+                placeholder="e.g. Underwater Atlantis, Cyberpunk Tokyo"
+              />
+            </div>
+          </div>
+
+          <!-- 4. Story Tone -->
+          <div class="input-group">
+            <label for="tone" class="input-label">
+              <span>4. Story Tone</span>
+            </label>
+            <select id="tone" name="tone" class="comic-select">
+              <option value="Light-hearted" selected>🎈 Light-hearted</option>
+              <option value="Dramatic">⚡ Dramatic</option>
+              <option value="Poetic">🌌 Poetic</option>
+              <option value="Funny">😂 Funny</option>
+            </select>
+          </div>
+
+          <!-- 5. Art Style -->
+          <div class="input-group">
+            <label for="art_style" class="input-label">
+              <span>5. Art Style</span>
+            </label>
+            <select id="art_style" name="art_style" class="comic-select">
+              <option value="Comic Book" selected>💥 Comic Book</option>
+              <option value="Anime">🌸 Anime</option>
+              <option value="Pixel Art">👾 Pixel Art</option>
+              <option value="Realistic">🎨 Realistic</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Large Attractive Action Button -->
+        <div class="generate-btn-container">
+          <button type="submit" id="generateBtn" class="btn-generate">
+            <span class="btn-icon">✨</span>
+            <span class="btn-text">GENERATE COMIC</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <!-- Interactive Loading Overlay with Multi-Stage Progress -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-card">
+      <div class="loading-spinner"></div>
+      <h2 class="loading-title">✨ Creating your comic...</h2>
+      <p class="loading-desc">Our AI storyteller and artist are assembling your 5-panel masterpiece.</p>
+
+      <!-- Stage indicators -->
+      <div class="stages-list">
+        <div id="stage1" class="stage-item active">
+          <span class="stage-icon">📝</span>
+          <span class="stage-text">Creating story outline</span>
+        </div>
+        <div id="stage2" class="stage-item">
+          <span class="stage-icon">💬</span>
+          <span class="stage-text">Writing narration & dialogue</span>
+        </div>
+        <div id="stage3" class="stage-item">
+          <span class="stage-icon">🎨</span>
+          <span class="stage-text">Creating comic artwork</span>
+        </div>
+        <div id="stage4" class="stage-item">
+          <span class="stage-icon">📐</span>
+          <span class="stage-text">Building comic layout</span>
+        </div>
+        <div id="stage5" class="stage-item">
+          <span class="stage-icon">📄</span>
+          <span class="stage-text">Preparing printable PDF</span>
+        </div>
+      </div>
+
+      <!-- Animated Progress Track -->
+      <div class="progress-track">
+        <div id="progressBar" class="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Studio Footer -->
+  <footer class="studio-footer">
+    <p class="footer-text">
+      ComicCraft AI &copy; 2026. Built with FastAPI, Google Gemini, and Stable Diffusion.
+    </p>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'white';
+      const newTheme = current === 'dark' ? 'white' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('comiccraft_theme', newTheme);
+      updateThemeButton(newTheme);
+    }
+
+    function updateThemeButton(theme) {
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      if (icon && label) {
+        if (theme === 'dark') {
+          icon.textContent = '☀️';
+          label.textContent = 'Light Mode';
+        } else {
+          icon.textContent = '🌙';
+          label.textContent = 'Dark Mode';
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'white';
+      updateThemeButton(current);
+    });
+
+    function toggleCustomSetting(value) {
+      const container = document.getElementById('customSettingContainer');
+      const input = document.getElementById('custom_setting');
+      if (value === 'Custom') {
+        container.style.display = 'block';
+        input.focus();
+      } else {
+        container.style.display = 'none';
+        input.value = '';
+      }
+    }
+
+    const comicForm = document.getElementById('comicForm');
+    const generateBtn = document.getElementById('generateBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const progressBar = document.getElementById('progressBar');
+
+    const stages = [
+      { id: 'stage1', pct: 20 },
+      { id: 'stage2', pct: 45 },
+      { id: 'stage3', pct: 70 },
+      { id: 'stage4', pct: 90 },
+      { id: 'stage5', pct: 98 }
+    ];
+
+    comicForm.addEventListener('submit', function (e) {
+      const promptVal = document.getElementById('story_prompt').value.trim();
+      const heroVal = document.getElementById('character_name').value.trim();
+
+      if (!promptVal || !heroVal) {
+        return;
+      }
+
+      generateBtn.disabled = true;
+      generateBtn.innerHTML = '<span>⚡ GENERATING MASTERPIECE...</span>';
+      loadingOverlay.style.display = 'flex';
+
+      let currentStageIdx = 0;
+      const stageInterval = setInterval(() => {
+        if (currentStageIdx < stages.length) {
+          const currentStage = stages[currentStageIdx];
+          
+          if (currentStageIdx > 0) {
+            const prev = document.getElementById(stages[currentStageIdx - 1].id);
+            prev.classList.remove('active');
+            prev.classList.add('completed');
+            prev.querySelector('.stage-icon').textContent = '✅';
+          }
+
+          const curr = document.getElementById(currentStage.id);
+          curr.classList.add('active');
+          progressBar.style.width = currentStage.pct + '%';
+
+          currentStageIdx++;
+        } else {
+          clearInterval(stageInterval);
+        }
+      }, 2500);
+    });
+  </script>
+</body>
+</html>
